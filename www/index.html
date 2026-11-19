@@ -40,7 +40,6 @@
       box-shadow: inset 0 0 0 6px var(--danger);
     }
 
-    /* Header */
     .header {
       position: sticky;
       top: 0;
@@ -65,7 +64,6 @@
       height: 10px;
       border-radius: 50%;
       background: var(--muted);
-      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
     }
 
     .brand-dot.active {
@@ -93,9 +91,6 @@
       background: var(--surface-2);
       border: 1px solid var(--border);
       color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .gps-pill.good {
@@ -129,7 +124,6 @@
       border: 1px solid var(--border);
       border-radius: 22px;
       padding: 14px 12px 16px;
-      position: relative;
       text-align: center;
       margin-bottom: 12px;
       overflow: hidden;
@@ -167,7 +161,23 @@
       margin-top: 4px;
     }
 
-    /* Lean Angle Bar */
+    .bg-badge {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 160, 0.3);
+    }
+
+    .bg-badge.hidden {
+      display: none;
+    }
+
+    /* Lean Angle */
     .lean-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -196,7 +206,7 @@
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 5px 10px;
+      padding: 6px 10px;
       font-size: 11px;
       font-weight: 700;
       cursor: pointer;
@@ -298,7 +308,6 @@
       margin-top: 2px;
     }
 
-    /* Controls Row */
     .btn-row {
       display: grid;
       grid-template-columns: 1.4fr 1fr;
@@ -487,14 +496,14 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 16px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .odo-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .odo-val {
@@ -507,7 +516,7 @@
     .odo-input-row {
       display: flex;
       gap: 8px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .odo-input-row input {
@@ -517,8 +526,69 @@
       border-radius: 10px;
       padding: 10px 12px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
+    }
+
+    /* Quick Route Card */
+    .quick-route-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-quick {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 10px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-quick:active {
+      transform: scale(0.97);
+      border-color: var(--accent);
+    }
+
+    .btn-quick .q-km {
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .btn-quick .q-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .quick-custom-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .quick-custom-row input {
+      flex: 1;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      color: #fff;
+      font-size: 12px;
     }
 
     .service-item {
@@ -534,7 +604,7 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .service-name {
@@ -561,12 +631,24 @@
     .status-tag.warn { background: rgba(245, 158, 11, 0.18); color: var(--amber); }
     .status-tag.due { background: var(--danger-dim); color: var(--danger); }
 
+    .dual-metric {
+      margin-bottom: 8px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
     .prog-track {
-      height: 8px;
+      height: 7px;
       background: #090d16;
       border-radius: 999px;
       overflow: hidden;
-      margin: 8px 0 10px;
+      margin-bottom: 8px;
     }
 
     .prog-fill {
@@ -577,14 +659,10 @@
 
     .service-actions {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .service-remain {
-      font-size: 12px;
-      font-weight: 700;
+      justify-content: flex-end;
+      gap: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(36, 48, 71, 0.6);
     }
 
     .add-service-card {
@@ -609,7 +687,7 @@
       border-radius: 10px;
       padding: 10px;
       color: #fff;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .form-grid .full {
@@ -704,13 +782,9 @@
               <stop offset="100%" stop-color="#ef4444" />
             </linearGradient>
           </defs>
-          <!-- Background Track (220 deg arc from 160deg to 380deg) -->
           <path id="arcBg" d="" fill="none" stroke="#1e293b" stroke-width="18" stroke-linecap="round" />
-          <!-- Active Progress Arc -->
           <path id="arcFill" d="" fill="none" stroke="url(#arcGrad)" stroke-width="18" stroke-linecap="round" />
-          <!-- Tick Marks & Labels -->
           <g id="gaugeTicks"></g>
-          <!-- Needle -->
           <g id="gaugeNeedle" transform="rotate(-110 150 155)">
             <line x1="150" y1="155" x2="150" y2="38" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.92" />
             <circle cx="150" cy="155" r="7" fill="#00e5a0" stroke="#090d16" stroke-width="2" />
@@ -720,6 +794,7 @@
         <div class="speed-readout">
           <div class="speed-num" id="speedNum">0</div>
           <div class="speed-unit">KM / JAM</div>
+          <div class="bg-badge hidden" id="bgBadge">🛰️ Background GPS Aktif • Aman Dikantongin</div>
         </div>
       </div>
 
@@ -812,11 +887,7 @@
           <h3>Riwayat Tes Tarikan</h3>
           <span style="font-size:11px; color:var(--muted);" id="allTimeTopLabel">Rekor Top: 0 km/j</span>
         </div>
-        <div id="dragHistoryList">
-          <div style="font-size:12px; color:var(--muted); text-align:center; padding:12px 0;">
-            Belum ada catatan tes. Berhenti di 0 km/jam lalu tarik gas!
-          </div>
-        </div>
+        <div id="dragHistoryList"></div>
       </div>
     </section>
 
@@ -824,15 +895,30 @@
     <section id="tab-servis" class="tab-view">
       <div class="odo-card">
         <div class="odo-top">
-          <span style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase;">Odometer Motor Saat Ini</span>
+          <span style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase;">Odometer Virtual Motor</span>
           <label style="font-size:11px; color:var(--accent); display:flex; align-items:center; gap:5px;">
             <input type="checkbox" id="autoSyncOdo" checked /> Auto-tambah GPS
           </label>
         </div>
-        <div class="odo-val"><span id="odoDisplay">15000</span> <span style="font-size:14px; color:var(--muted);">KM</span></div>
+        <div class="odo-val"><span id="odoDisplay">0</span> <span style="font-size:14px; color:var(--muted);">KM</span></div>
         <div class="odo-input-row">
-          <input type="number" id="odoInput" placeholder="Masukkan KM di spidometer motor..." />
-          <button class="btn-mini" id="btnUpdateOdo" style="background:var(--accent); color:#04130d; padding:0 14px; font-size:12px;">Simpan</button>
+          <input type="number" id="odoInput" placeholder="Atur ulang angka KM awal..." />
+          <button class="btn-mini" id="btnUpdateOdo" style="background:var(--accent); color:#04130d; padding:0 14px; font-size:12px;">Set KM</button>
+        </div>
+      </div>
+
+      <!-- Quick Route Buttons -->
+      <div class="quick-route-card">
+        <div class="section-head" style="margin-bottom:2px;">
+          <h3>⚡ Tambah Cepat (Jika Lupa Nyalain GPS)</h3>
+          <button class="btn-mini" id="btnUndoQuick" style="display:none; color:var(--amber);">↶ Undo</button>
+        </div>
+        <div style="font-size:11px; color:var(--muted);">Tap sekali buat nambahin estimasi jarak rute harian lu</div>
+        <div class="quick-grid" id="quickRouteGrid"></div>
+        <div class="quick-custom-row">
+          <input type="text" id="customRouteLabel" placeholder="Nama rute (misal: PP Kerja)" />
+          <input type="number" id="customRouteKm" placeholder="KM" style="max-width:74px;" />
+          <button class="btn-mini" id="btnAddQuickRoute" style="background:var(--cyan); color:#04130d;">+ Simpan</button>
         </div>
       </div>
 
@@ -842,15 +928,14 @@
         <div style="font-size:13px; font-weight:800;">+ Tambah Pengingat Servis Baru</div>
         <div class="form-grid">
           <input type="text" id="newSvcName" class="full" placeholder="Nama (misal: Kampas Rem / Busi / Ban)" />
-          <input type="number" id="newSvcLast" placeholder="KM Terakhir Ganti" />
-          <input type="number" id="newSvcInt" placeholder="Interval (misal: 2000)" />
+          <input type="number" id="newSvcIntKm" placeholder="Batas KM (misal: 2000)" />
+          <input type="number" id="newSvcIntDays" placeholder="Batas Hari (misal: 60)" />
         </div>
         <button class="btn-main" id="btnAddService" style="width:100%; padding:11px;">Simpan Pengingat</button>
       </div>
     </section>
   </main>
 
-  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="speedo">
       <span class="ico">🏍️</span>
@@ -869,8 +954,20 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    // ---------- STORAGE KEYS ----------
     const STORE_KEY = 'speedo_app_data_v1';
+
+    function todayISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function daysSince(isoDate) {
+      if (!isoDate) return 0;
+      const start = new Date(isoDate + 'T00:00:00');
+      const now = new Date();
+      const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+      return Math.max(0, diff);
+    }
 
     const defaultData = {
       odometer: 15000,
@@ -881,10 +978,16 @@
       best0100: null,
       best201: null,
       dragHistory: [],
+      quickRoutes: [
+        { id: 1, label: 'Dekat / Warung', km: 5 },
+        { id: 2, label: 'PP Kerja', km: 15 },
+        { id: 3, label: 'PP Kampus / Mall', km: 25 },
+        { id: 4, label: 'Sunmori / Jauh', km: 50 }
+      ],
       services: [
-        { id: 1, name: 'Oli Mesin', lastKm: 14000, intervalKm: 2000 },
-        { id: 2, name: 'Oli Gardan', lastKm: 13000, intervalKm: 4000 },
-        { id: 3, name: 'Servis CVT & V-Belt', lastKm: 12000, intervalKm: 8000 }
+        { id: 1, name: 'Oli Mesin', lastKm: 15000, intervalKm: 2000, lastDate: todayISO(), intervalDays: 60 },
+        { id: 2, name: 'Oli Gardan', lastKm: 15000, intervalKm: 4000, lastDate: todayISO(), intervalDays: 120 },
+        { id: 3, name: 'Servis CVT & V-Belt', lastKm: 15000, intervalKm: 8000, lastDate: todayISO(), intervalDays: 180 }
       ]
     };
 
@@ -892,7 +995,18 @@
       try {
         const raw = localStorage.getItem(STORE_KEY);
         if (!raw) return structuredClone(defaultData);
-        return { ...structuredClone(defaultData), ...JSON.parse(raw) };
+        const parsed = JSON.parse(raw);
+        const merged = { ...structuredClone(defaultData), ...parsed };
+        // Migrate old service items missing date fields
+        merged.services = (merged.services || []).map(s => ({
+          ...s,
+          lastDate: s.lastDate || todayISO(),
+          intervalDays: s.intervalDays || 60
+        }));
+        if (!merged.quickRoutes || !merged.quickRoutes.length) {
+          merged.quickRoutes = structuredClone(defaultData.quickRoutes);
+        }
+        return merged;
       } catch {
         return structuredClone(defaultData);
       }
@@ -903,17 +1017,15 @@
       localStorage.setItem(STORE_KEY, JSON.stringify(appData));
     }
 
-    // ---------- UI HELPERS ----------
     let toastTimer = null;
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.classList.add('show');
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    // Tab switching
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -923,18 +1035,14 @@
       });
     });
 
-    // ---------- SVG GAUGE SETUP ----------
+    // ---------- GAUGE ----------
     const MAX_GAUGE_SPEED = 160;
     const CX = 150, CY = 155, R = 118;
-    const START_ANGLE = -110; // degrees from top (12 o'clock)
-    const END_ANGLE = 110;    // total sweep = 220 deg
+    const START_ANGLE = -110, END_ANGLE = 110;
 
     function polarToCartesian(cx, cy, r, angleDegFromTop) {
       const rad = ((angleDegFromTop - 90) * Math.PI) / 180;
-      return {
-        x: cx + r * Math.cos(rad),
-        y: cy + r * Math.sin(rad)
-      };
+      return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
     }
 
     function describeArc(cx, cy, r, startAngle, endAngle) {
@@ -951,7 +1059,6 @@
 
     arcBg.setAttribute('d', describeArc(CX, CY, R, START_ANGLE, END_ANGLE));
 
-    // Build ticks 0..160 step 20
     for (let spd = 0; spd <= MAX_GAUGE_SPEED; spd += 20) {
       const ratio = spd / MAX_GAUGE_SPEED;
       const deg = START_ANGLE + ratio * (END_ANGLE - START_ANGLE);
@@ -960,20 +1067,16 @@
       const pt = polarToCartesian(CX, CY, R - 35, deg);
 
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', p1.x);
-      line.setAttribute('y1', p1.y);
-      line.setAttribute('x2', p2.x);
-      line.setAttribute('y2', p2.y);
+      line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+      line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
       line.setAttribute('stroke', spd >= 120 ? '#ef4444' : '#64748b');
       line.setAttribute('stroke-width', '2');
       gaugeTicks.appendChild(line);
 
       const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      txt.setAttribute('x', pt.x);
-      txt.setAttribute('y', pt.y + 4);
+      txt.setAttribute('x', pt.x); txt.setAttribute('y', pt.y + 4);
       txt.setAttribute('fill', spd >= 120 ? '#f87171' : '#94a3b8');
-      txt.setAttribute('font-size', '10');
-      txt.setAttribute('font-weight', '700');
+      txt.setAttribute('font-size', '10'); txt.setAttribute('font-weight', '700');
       txt.setAttribute('text-anchor', 'middle');
       txt.textContent = spd;
       gaugeTicks.appendChild(txt);
@@ -986,36 +1089,23 @@
 
       document.getElementById('speedNum').textContent = Math.round(speedKmh);
       gaugeNeedle.setAttribute('transform', `rotate(${angle} ${CX} ${CY})`);
+      arcFill.setAttribute('d', clamped <= 0.5 ? '' : describeArc(CX, CY, R, START_ANGLE, angle));
 
-      if (clamped <= 0.5) {
-        arcFill.setAttribute('d', '');
-      } else {
-        arcFill.setAttribute('d', describeArc(CX, CY, R, START_ANGLE, angle));
-      }
-
-      // Speed limit flash
       if (appData.speedLimit > 0 && speedKmh >= appData.speedLimit) {
         document.body.classList.add('speed-alert-flash');
       } else {
         document.body.classList.remove('speed-alert-flash');
       }
     }
-
     updateGauge(0);
 
-    // ---------- LEAN ANGLE (DEVICE ORIENTATION) ----------
-    let leanOffset = 0;
-    let rawGamma = 0;
-    let maxLeanL = 0;
-    let maxLeanR = 0;
+    // ---------- LEAN ANGLE ----------
+    let leanOffset = 0, rawGamma = 0, maxLeanL = 0, maxLeanR = 0;
 
-    function handleOrientation(ev) {
+    window.addEventListener('deviceorientation', (ev) => {
       if (typeof ev.gamma !== 'number') return;
-      rawGamma = ev.gamma; // -90 to 90 in portrait
-      let angle = Math.round(rawGamma - leanOffset);
-      if (angle > 65) angle = 65;
-      if (angle < -65) angle = -65;
-
+      rawGamma = ev.gamma;
+      let angle = Math.max(-65, Math.min(65, Math.round(rawGamma - leanOffset)));
       const absAngle = Math.abs(angle);
       if (angle < 0 && absAngle > maxLeanL) maxLeanL = absAngle;
       if (angle > 0 && absAngle > maxLeanR) maxLeanR = absAngle;
@@ -1036,44 +1126,34 @@
         bar.style.width = `${pct}%`;
         bar.style.background = absAngle > 35 ? '#ef4444' : '#00e5a0';
       }
-    }
-
-    window.addEventListener('deviceorientation', handleOrientation);
+    });
 
     document.getElementById('btnCalibrateLean').addEventListener('click', () => {
       leanOffset = rawGamma;
-      maxLeanL = 0;
-      maxLeanR = 0;
+      maxLeanL = 0; maxLeanR = 0;
       document.getElementById('maxLeanL').textContent = '0°';
       document.getElementById('maxLeanR').textContent = '0°';
       document.getElementById('leanNow').textContent = '0°';
       showToast('Sudut miring dikalibrasi ke 0°');
     });
 
-    // ---------- GPS ENGINE + SMOOTHING + DRAG TIMER ----------
+    // ---------- GPS + BACKGROUND SERVICE + DRAG ----------
     let gpsRunning = false;
     let watchId = null;
-    let isCapGeo = false;
+    let bgListenerHandle = null;
+    let gpsMode = 'none'; // 'bg' | 'cap' | 'web'
 
     let lastPos = null;
-    let currentSpeed = 0;
-    let prevSpeed = 0;
-    let prevTime = 0;
-    let sessionTopSpeed = 0;
-    let sessionTripKm = 0;
-    let movingSpeedSum = 0;
-    let movingSamples = 0;
+    let currentSpeed = 0, prevSpeed = 0, prevTime = 0;
+    let sessionTopSpeed = 0, sessionTripKm = 0;
+    let movingSpeedSum = 0, movingSamples = 0;
     let odoAccKm = 0;
 
-    // Drag state
     const drag = {
-      status: 'IDLE', // IDLE | READY | RUNNING | DONE
+      status: 'IDLE',
       startTime: 0,
-      startDistM: 0,
       distM: 0,
-      t60: null,
-      t100: null,
-      t201: null,
+      t60: null, t100: null, t201: null,
       rafId: null
     };
 
@@ -1109,13 +1189,12 @@
       } else if (drag.status === 'DONE') {
         badge.classList.add('done');
         badge.textContent = 'SELESAI';
-        sub.textContent = 'Berhenti 0 km/j atau tap Siapkan Ulang untuk tes lagi';
+        sub.textContent = 'Tap Siapkan Ulang untuk tes lagi';
       }
 
       document.getElementById('run060').textContent = drag.t60 ? `${drag.t60.toFixed(2)}s` : '--';
       document.getElementById('run0100').textContent = drag.t100 ? `${drag.t100.toFixed(2)}s` : '--';
       document.getElementById('run201').textContent = drag.t201 ? `${drag.t201.toFixed(2)}s` : '--';
-
       document.getElementById('best060').textContent = appData.best060 ? `Best: ${appData.best060.toFixed(2)}s` : 'Best: --';
       document.getElementById('best0100').textContent = appData.best0100 ? `Best: ${appData.best0100.toFixed(2)}s` : 'Best: --';
       document.getElementById('best201').textContent = appData.best201 ? `Best: ${appData.best201.toFixed(2)}s` : 'Best: --';
@@ -1124,8 +1203,7 @@
 
     function tickDragClock() {
       if (drag.status === 'RUNNING') {
-        const elapsed = (performance.now() - drag.startTime) / 1000;
-        document.getElementById('dragTimerVal').textContent = elapsed.toFixed(2);
+        document.getElementById('dragTimerVal').textContent = ((performance.now() - drag.startTime) / 1000).toFixed(2);
         drag.rafId = requestAnimationFrame(tickDragClock);
       }
     }
@@ -1138,12 +1216,7 @@
       if (drag.t201 && (!appData.best201 || drag.t201 < appData.best201)) { appData.best201 = drag.t201; changed = true; }
 
       const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      appData.dragHistory.unshift({
-        time: nowStr,
-        t60: drag.t60,
-        t100: drag.t100,
-        t201: drag.t201
-      });
+      appData.dragHistory.unshift({ time: nowStr, t60: drag.t60, t100: drag.t100, t201: drag.t201 });
       if (appData.dragHistory.length > 12) appData.dragHistory.pop();
       saveData();
       renderDragHistory();
@@ -1170,9 +1243,7 @@
       if (drag.status === 'IDLE') {
         if (speed <= 1.8) {
           drag.status = 'READY';
-          drag.t60 = null;
-          drag.t100 = null;
-          drag.t201 = null;
+          drag.t60 = drag.t100 = drag.t201 = null;
           drag.distM = 0;
           document.getElementById('dragTimerVal').textContent = '0.00';
         }
@@ -1188,44 +1259,31 @@
         const elapsed = (nowMs - drag.startTime) / 1000;
         const dt = (nowMs - prevTime) / 1000;
 
-        // Interpolated 0-60
         if (!drag.t60 && speed >= 60) {
           const frac = (speed > prevSpeed && dt > 0) ? (60 - prevSpeed) / (speed - prevSpeed) : 1;
           drag.t60 = Math.max(0.1, elapsed - dt * (1 - Math.max(0, Math.min(1, frac))));
         }
-        // Interpolated 0-100
         if (!drag.t100 && speed >= 100) {
           const frac = (speed > prevSpeed && dt > 0) ? (100 - prevSpeed) / (speed - prevSpeed) : 1;
           drag.t100 = Math.max(0.1, elapsed - dt * (1 - Math.max(0, Math.min(1, frac))));
         }
-        // 201m
-        if (!drag.t201 && drag.distM >= 201) {
-          drag.t201 = elapsed;
-        }
+        if (!drag.t201 && drag.distM >= 201) drag.t201 = elapsed;
 
-        // Auto-finish if all targets hit or bike slowed down to stop after moving
         if ((drag.t60 && drag.t100 && drag.t201) || (elapsed > 4 && speed < 2)) {
           drag.status = 'DONE';
           cancelAnimationFrame(drag.rafId);
           saveDragRun();
         }
-      } else if (drag.status === 'DONE') {
-        if (speed <= 1.2) {
-          // Stay done until user clicks Arm or stays stopped
-        }
       }
       updateDragUI();
     }
 
-    function onPositionUpdate(pos) {
-      if (!pos || !pos.coords) return;
-      const { latitude, longitude, speed, accuracy } = pos.coords;
+    function handleCoords(latitude, longitude, speed, accuracy) {
       const nowMs = performance.now();
-
-      // Update GPS pill
       const pill = document.getElementById('gpsPill');
       const dot = document.getElementById('gpsDot');
       const acc = Math.round(accuracy || 99);
+
       if (acc <= 15) {
         pill.className = 'gps-pill good';
         pill.textContent = `GPS Kuat (±${acc}m)`;
@@ -1236,34 +1294,30 @@
         dot.className = 'brand-dot searching';
       }
 
-      // Compute distance & fallback speed
       let deltaDistM = 0;
       let computedKmh = 0;
       if (lastPos && acc <= 35) {
         const d = haversineMeters(lastPos.lat, lastPos.lon, latitude, longitude);
         const dtSec = (nowMs - lastPos.time) / 1000;
-        if (d > 1.2 && dtSec > 0.2) {
+        if (d > 1.2 && dtSec > 0.2 && d < 250) {
           deltaDistM = d;
           computedKmh = (d / dtSec) * 3.6;
         }
       }
 
       let rawKmh = (typeof speed === 'number' && speed >= 0) ? speed * 3.6 : computedKmh;
-      // Filter GPS jitter when stationary
       if (rawKmh < 1.5 || acc > 40) rawKmh = 0;
 
-      // Light smoothing for responsive gauge
       prevSpeed = currentSpeed;
       currentSpeed = currentSpeed * 0.25 + rawKmh * 0.75;
       if (rawKmh === 0 && currentSpeed < 1.5) currentSpeed = 0;
 
-      // Update trip & odometer
       if (deltaDistM > 0 && currentSpeed > 2) {
         const deltaKm = deltaDistM / 1000;
         sessionTripKm += deltaKm;
         if (appData.autoSyncOdo) {
           odoAccKm += deltaKm;
-          if (odoAccKm >= 0.5) {
+          if (odoAccKm >= 0.2) {
             appData.odometer = Math.round((appData.odometer + odoAccKm) * 10) / 10;
             odoAccKm = 0;
             saveData();
@@ -1272,7 +1326,6 @@
         }
       }
 
-      // Top & Avg speed
       if (currentSpeed > sessionTopSpeed) sessionTopSpeed = currentSpeed;
       if (currentSpeed > appData.allTimeTop) {
         appData.allTimeTop = currentSpeed;
@@ -1289,7 +1342,6 @@
       document.getElementById('avgSpeedVal').textContent = movingSamples ? Math.round(movingSpeedSum / movingSamples) : 0;
 
       processDragLogic(currentSpeed, nowMs, deltaDistM);
-
       lastPos = { lat: latitude, lon: longitude, time: nowMs };
       prevTime = nowMs;
     }
@@ -1304,26 +1356,33 @@
       dot.className = 'brand-dot searching';
 
       try {
-        // Keep wake lock for web fallback
-        if ('wakeLock' in navigator) {
-          navigator.wakeLock.request('screen').catch(() => {});
+        if (window.Capacitor?.Plugins?.Geolocation) {
+          await window.Capacitor.Plugins.Geolocation.requestPermissions();
         }
 
-        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation) {
+        if (window.Capacitor?.Plugins?.BgGps) {
+          const BgGps = window.Capacitor.Plugins.BgGps;
+          bgListenerHandle = await BgGps.addListener('location', (loc) => {
+            handleCoords(loc.latitude, loc.longitude, loc.speed, loc.accuracy);
+          });
+          await BgGps.start();
+          gpsMode = 'bg';
+          document.getElementById('bgBadge').classList.remove('hidden');
+        } else if (window.Capacitor?.Plugins?.Geolocation) {
           const Geo = window.Capacitor.Plugins.Geolocation;
-          await Geo.requestPermissions();
-          isCapGeo = true;
+          gpsMode = 'cap';
           watchId = await Geo.watchPosition(
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
             (pos, err) => {
-              if (err) return;
-              onPositionUpdate(pos);
+              if (!err && pos?.coords) {
+                handleCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.speed, pos.coords.accuracy);
+              }
             }
           );
         } else if (navigator.geolocation) {
-          isCapGeo = false;
+          gpsMode = 'web';
           watchId = navigator.geolocation.watchPosition(
-            onPositionUpdate,
+            (pos) => handleCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.speed, pos.coords.accuracy),
             () => showToast('Izinkan akses lokasi/GPS di HP'),
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
           );
@@ -1337,9 +1396,9 @@
         btn.textContent = '⏹ Stop GPS';
         btn.classList.add('stop');
         updateDragUI();
-        showToast('GPS aktif — siap riding!');
+        showToast(gpsMode === 'bg' ? 'Background GPS aktif — aman kunci layar!' : 'GPS aktif!');
       } catch (err) {
-        showToast('Gagal mengaktifkan GPS. Pastikan Lokasi HP aktif.');
+        showToast('Gagal mengaktifkan GPS. Pastikan Lokasi HP aktif & diizinkan.');
         pill.className = 'gps-pill';
         pill.textContent = 'GPS Mati';
         dot.className = 'brand-dot';
@@ -1347,18 +1406,33 @@
     }
 
     async function stopGps() {
-      if (watchId !== null) {
-        if (isCapGeo && window.Capacitor?.Plugins?.Geolocation) {
-          await window.Capacitor.Plugins.Geolocation.clearWatch({ id: watchId });
-        } else if (navigator.geolocation) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-        watchId = null;
+      // Flush remaining odometer distance before stopping
+      if (odoAccKm > 0.05 && appData.autoSyncOdo) {
+        appData.odometer = Math.round((appData.odometer + odoAccKm) * 10) / 10;
+        odoAccKm = 0;
+        saveData();
+        renderServices();
       }
+
+      if (gpsMode === 'bg' && window.Capacitor?.Plugins?.BgGps) {
+        await window.Capacitor.Plugins.BgGps.stop();
+        if (bgListenerHandle) {
+          await bgListenerHandle.remove();
+          bgListenerHandle = null;
+        }
+      } else if (gpsMode === 'cap' && watchId !== null) {
+        await window.Capacitor.Plugins.Geolocation.clearWatch({ id: watchId });
+      } else if (gpsMode === 'web' && watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      watchId = null;
+      gpsMode = 'none';
       gpsRunning = false;
       currentSpeed = 0;
       lastPos = null;
       updateGauge(0);
+      document.getElementById('bgBadge').classList.add('hidden');
       document.getElementById('gpsPill').className = 'gps-pill';
       document.getElementById('gpsPill').textContent = 'GPS Mati';
       document.getElementById('gpsDot').className = 'brand-dot';
@@ -1366,6 +1440,7 @@
       btn.textContent = '▶ Mulai GPS';
       btn.classList.remove('stop');
       updateDragUI();
+      showToast('GPS dihentikan • Odometer tersimpan');
     }
 
     document.getElementById('btnToggleGps').addEventListener('click', () => {
@@ -1374,12 +1449,9 @@
     });
 
     document.getElementById('btnResetSession').addEventListener('click', () => {
-      sessionTopSpeed = 0;
-      sessionTripKm = 0;
-      movingSpeedSum = 0;
-      movingSamples = 0;
-      maxLeanL = 0;
-      maxLeanR = 0;
+      sessionTopSpeed = 0; sessionTripKm = 0;
+      movingSpeedSum = 0; movingSamples = 0;
+      maxLeanL = 0; maxLeanR = 0;
       document.getElementById('topSpeedVal').textContent = '0';
       document.getElementById('tripVal').textContent = '0.00';
       document.getElementById('avgSpeedVal').textContent = '0';
@@ -1399,9 +1471,7 @@
     document.getElementById('btnArmDrag').addEventListener('click', () => {
       cancelAnimationFrame(drag.rafId);
       drag.status = currentSpeed <= 1.8 && gpsRunning ? 'READY' : 'IDLE';
-      drag.t60 = null;
-      drag.t100 = null;
-      drag.t201 = null;
+      drag.t60 = drag.t100 = drag.t201 = null;
       drag.distM = 0;
       document.getElementById('dragTimerVal').textContent = '0.00';
       updateDragUI();
@@ -1409,9 +1479,7 @@
     });
 
     document.getElementById('btnClearDragHistory').addEventListener('click', () => {
-      appData.best060 = null;
-      appData.best0100 = null;
-      appData.best201 = null;
+      appData.best060 = appData.best0100 = appData.best201 = null;
       appData.dragHistory = [];
       saveData();
       updateDragUI();
@@ -1419,7 +1487,9 @@
       showToast('Riwayat & rekor drag dihapus');
     });
 
-    // ---------- SERVICE REMINDER ----------
+    // ---------- QUICK ROUTES & SERVICE (KM + HARI) ----------
+    let lastQuickAdded = 0;
+
     const autoSyncOdo = document.getElementById('autoSyncOdo');
     autoSyncOdo.checked = !!appData.autoSyncOdo;
     autoSyncOdo.addEventListener('change', () => {
@@ -1429,40 +1499,98 @@
 
     document.getElementById('btnUpdateOdo').addEventListener('click', () => {
       const val = Number(document.getElementById('odoInput').value);
-      if (!val || val < 0) {
-        showToast('Masukkan angka KM yang valid');
-        return;
-      }
+      if (isNaN(val) || val < 0) return showToast('Masukkan angka KM yang valid');
       appData.odometer = val;
       document.getElementById('odoInput').value = '';
       saveData();
       renderServices();
-      showToast(`Odometer di-update ke ${val.toLocaleString('id-ID')} km`);
+      showToast(`Odometer diatur ke ${val.toLocaleString('id-ID')} km`);
+    });
+
+    function renderQuickRoutes() {
+      const grid = document.getElementById('quickRouteGrid');
+      grid.innerHTML = appData.quickRoutes.map(r => `
+        <button class="btn-quick" data-qkm="${r.km}" data-qlabel="${r.label}">
+          <div>
+            <div class="q-km">+${r.km} km</div>
+            <div class="q-label">${r.label}</div>
+          </div>
+          <span style="font-size:11px; color:var(--muted);" data-qdel="${r.id}">✕</span>
+        </button>
+      `).join('');
+    }
+
+    document.getElementById('quickRouteGrid').addEventListener('click', (e) => {
+      const delId = e.target.getAttribute('data-qdel');
+      if (delId) {
+        e.stopPropagation();
+        appData.quickRoutes = appData.quickRoutes.filter(r => r.id !== Number(delId));
+        saveData();
+        renderQuickRoutes();
+        return;
+      }
+      const btn = e.target.closest('.btn-quick');
+      if (!btn) return;
+      const km = Number(btn.dataset.qkm);
+      const label = btn.dataset.qlabel;
+      appData.odometer = Math.round((appData.odometer + km) * 10) / 10;
+      lastQuickAdded = km;
+      document.getElementById('btnUndoQuick').style.display = 'inline-block';
+      saveData();
+      renderServices();
+      showToast(`+${km} km (${label}) ditambahkan!`);
+    });
+
+    document.getElementById('btnUndoQuick').addEventListener('click', () => {
+      if (lastQuickAdded > 0) {
+        appData.odometer = Math.max(0, Math.round((appData.odometer - lastQuickAdded) * 10) / 10);
+        showToast(`Batal tambah +${lastQuickAdded} km`);
+        lastQuickAdded = 0;
+        document.getElementById('btnUndoQuick').style.display = 'none';
+        saveData();
+        renderServices();
+      }
+    });
+
+    document.getElementById('btnAddQuickRoute').addEventListener('click', () => {
+      const label = document.getElementById('customRouteLabel').value.trim();
+      const km = Number(document.getElementById('customRouteKm').value);
+      if (!label || !km || km <= 0) return showToast('Isi nama rute & jarak KM-nya');
+      appData.quickRoutes.push({ id: Date.now(), label, km });
+      document.getElementById('customRouteLabel').value = '';
+      document.getElementById('customRouteKm').value = '';
+      saveData();
+      renderQuickRoutes();
+      showToast(`Tombol +${km} km (${label}) disimpan`);
     });
 
     document.getElementById('btnAddService').addEventListener('click', () => {
       const name = document.getElementById('newSvcName').value.trim();
-      const lastKm = Number(document.getElementById('newSvcLast').value) || Math.round(appData.odometer);
-      const intervalKm = Number(document.getElementById('newSvcInt').value);
-
-      if (!name || !intervalKm || intervalKm <= 0) {
-        showToast('Isi nama servis dan interval KM-nya');
-        return;
-      }
+      const intervalKm = Number(document.getElementById('newSvcIntKm').value);
+      const intervalDays = Number(document.getElementById('newSvcIntDays').value) || 60;
+      if (!name || !intervalKm || intervalKm <= 0) return showToast('Isi nama servis & batas KM-nya');
 
       appData.services.push({
         id: Date.now(),
         name,
-        lastKm,
-        intervalKm
+        lastKm: Math.round(appData.odometer),
+        intervalKm,
+        lastDate: todayISO(),
+        intervalDays
       });
       document.getElementById('newSvcName').value = '';
-      document.getElementById('newSvcLast').value = '';
-      document.getElementById('newSvcInt').value = '';
+      document.getElementById('newSvcIntKm').value = '';
+      document.getElementById('newSvcIntDays').value = '';
       saveData();
       renderServices();
       showToast(`${name} ditambahkan`);
     });
+
+    function getBarColor(pct, remain) {
+      if (remain <= 0) return '#ef4444';
+      if (pct >= 80) return '#f59e0b';
+      return '#00e5a0';
+    }
 
     function renderServices() {
       const odo = Math.round(appData.odometer);
@@ -1472,24 +1600,30 @@
       list.innerHTML = '';
 
       appData.services.forEach(svc => {
-        const used = Math.max(0, odo - svc.lastKm);
-        const remain = svc.intervalKm - used;
-        const pct = Math.min(100, Math.round((used / svc.intervalKm) * 100));
+        const usedKm = Math.max(0, odo - svc.lastKm);
+        const remainKm = svc.intervalKm - usedKm;
+        const pctKm = Math.min(100, Math.round((usedKm / svc.intervalKm) * 100));
 
-        let statusClass = 'ok', statusText = 'Aman', barColor = '#00e5a0';
-        if (remain <= 0) {
-          statusClass = 'due';
-          statusText = 'Wajib Ganti!';
-          barColor = '#ef4444';
-        } else if (pct >= 80) {
-          statusClass = 'warn';
-          statusText = 'Sebentar Lagi';
-          barColor = '#f59e0b';
-        }
+        const usedDays = daysSince(svc.lastDate);
+        const remainDays = svc.intervalDays - usedDays;
+        const pctDays = Math.min(100, Math.round((usedDays / svc.intervalDays) * 100));
 
-        const remainText = remain > 0
-          ? `Sisa ${remain.toLocaleString('id-ID')} km`
-          : `Lewat ${Math.abs(remain).toLocaleString('id-ID')} km`;
+        const maxPct = Math.max(pctKm, pctDays);
+        const isDue = remainKm <= 0 || remainDays <= 0;
+
+        let statusClass = 'ok', statusText = 'Aman';
+        if (isDue) { statusClass = 'due'; statusText = 'Wajib Ganti!'; }
+        else if (maxPct >= 80) { statusClass = 'warn'; statusText = 'Sebentar Lagi'; }
+
+        const kmColor = getBarColor(pctKm, remainKm);
+        const dayColor = getBarColor(pctDays, remainDays);
+
+        const kmText = remainKm > 0
+          ? `Sisa ${remainKm.toLocaleString('id-ID')} km`
+          : `Lewat ${Math.abs(remainKm).toLocaleString('id-ID')} km`;
+        const dayText = remainDays > 0
+          ? `Sisa ${remainDays} hari`
+          : `Lewat ${Math.abs(remainDays)} hari`;
 
         const el = document.createElement('div');
         el.className = 'service-item';
@@ -1497,19 +1631,32 @@
           <div class="service-top">
             <div>
               <h4 class="service-name">${svc.name}</h4>
-              <div class="service-meta">Terakhir: ${svc.lastKm.toLocaleString('id-ID')} km • Tiap ${svc.intervalKm.toLocaleString('id-ID')} km</div>
+              <div class="service-meta">Ganti tiap ${svc.intervalKm.toLocaleString('id-ID')} km atau ${svc.intervalDays} hari</div>
             </div>
             <span class="status-tag ${statusClass}">${statusText}</span>
           </div>
-          <div class="prog-track">
-            <div class="prog-fill" style="width:${pct}%; background:${barColor};"></div>
-          </div>
-          <div class="service-actions">
-            <span class="service-remain" style="color:${barColor};">${remainText}</span>
-            <div style="display:flex; gap:6px;">
-              <button class="btn-mini" data-svc-reset="${svc.id}" style="color:var(--accent);">✓ Sudah Ganti</button>
-              <button class="btn-mini" data-svc-del="${svc.id}" style="color:var(--danger);">✕</button>
+
+          <div class="dual-metric">
+            <div class="metric-row">
+              <span style="color:var(--muted);">Jarak (${usedKm.toLocaleString('id-ID')} / ${svc.intervalKm.toLocaleString('id-ID')} km)</span>
+              <span style="color:${kmColor};">${kmText}</span>
             </div>
+            <div class="prog-track">
+              <div class="prog-fill" style="width:${pctKm}%; background:${kmColor};"></div>
+            </div>
+
+            <div class="metric-row">
+              <span style="color:var(--muted);">Waktu (${usedDays} / ${svc.intervalDays} hari • sejak ${svc.lastDate})</span>
+              <span style="color:${dayColor};">${dayText}</span>
+            </div>
+            <div class="prog-track" style="margin-bottom:4px;">
+              <div class="prog-fill" style="width:${pctDays}%; background:${dayColor};"></div>
+            </div>
+          </div>
+
+          <div class="service-actions">
+            <button class="btn-mini" data-svc-reset="${svc.id}" style="color:var(--accent);">✓ Sudah Ganti</button>
+            <button class="btn-mini" data-svc-del="${svc.id}" style="color:var(--danger);">✕</button>
           </div>
         `;
         list.appendChild(el);
@@ -1523,9 +1670,10 @@
         const svc = appData.services.find(s => s.id === Number(resetId));
         if (svc) {
           svc.lastKm = Math.round(appData.odometer);
+          svc.lastDate = todayISO();
           saveData();
           renderServices();
-          showToast(`${svc.name} di-reset ke ${svc.lastKm.toLocaleString('id-ID')} km`);
+          showToast(`${svc.name} di-reset ke ${svc.lastKm.toLocaleString('id-ID')} km & hari ini`);
         }
       } else if (delId) {
         appData.services = appData.services.filter(s => s.id !== Number(delId));
@@ -1535,9 +1683,9 @@
       }
     });
 
-    // Initial renders
     renderDragHistory();
     updateDragUI();
+    renderQuickRoutes();
     renderServices();
   </script>
 </body>
