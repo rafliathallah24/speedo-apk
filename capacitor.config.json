@@ -1,0 +1,8 @@
+{
+  "appId": "com.rafli.speedo",
+  "appName": "Speedo",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  }
+}

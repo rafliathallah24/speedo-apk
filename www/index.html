@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Speedo</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-2: #1a2335;
+      --border: #243047;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #00e5a0;
+      --accent-dim: rgba(0, 229, 160, 0.14);
+      --cyan: #38bdf8;
+      --amber: #f59e0b;
+      --danger: #ef4444;
+      --danger-dim: rgba(239, 68, 68, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 84px;
+      min-height: 100vh;
+      transition: box-shadow 0.2s ease;
+    }
+
+    body.speed-alert-flash {
+      box-shadow: inset 0 0 0 6px var(--danger);
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(9, 13, 22, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+    }
+
+    .brand-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .brand-dot.searching {
+      background: var(--amber);
+      box-shadow: 0 0 10px var(--amber);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .gps-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gps-pill.good {
+      color: var(--accent);
+      border-color: rgba(0, 229, 160, 0.35);
+      background: var(--accent-dim);
+    }
+
+    .gps-pill.warn {
+      color: var(--amber);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    /* Gauge Card */
+    .gauge-card {
+      background: radial-gradient(circle at 50% 35%, #162033 0%, #0d1321 75%);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 14px 12px 16px;
+      position: relative;
+      text-align: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      max-width: 310px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .speed-readout {
+      margin-top: -86px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .speed-num {
+      font-size: 74px;
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -2px;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+      text-shadow: 0 0 24px rgba(0, 229, 160, 0.22);
+    }
+
+    .speed-unit {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Lean Angle Bar */
+    .lean-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .lean-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .lean-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .btn-mini {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-mini:active {
+      transform: scale(0.96);
+    }
+
+    .lean-display {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .lean-side {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      min-width: 64px;
+    }
+
+    .lean-side strong {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .lean-current {
+      font-size: 24px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      color: var(--cyan);
+    }
+
+    .lean-bar-track {
+      position: relative;
+      height: 10px;
+      background: #0b1120;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .lean-center-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #475569;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .lean-bar-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: var(--cyan);
+      transition: all 0.08s linear;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 5px;
+    }
+
+    .stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Controls Row */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .btn-main {
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--accent);
+      color: #04130d;
+    }
+
+    .btn-main.stop {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-sec {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn-main:active, .btn-sec:active {
+      transform: scale(0.98);
+    }
+
+    .alert-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .alert-row select {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Drag Tab */
+    .drag-status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 16px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .drag-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      background: var(--surface-2);
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .drag-badge.ready {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 160, 0.4);
+    }
+
+    .drag-badge.running {
+      background: rgba(245, 158, 11, 0.18);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+    }
+
+    .drag-badge.done {
+      background: rgba(56, 189, 248, 0.18);
+      color: var(--cyan);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+    }
+
+    .drag-timer {
+      font-size: 52px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.05;
+      margin: 4px 0;
+    }
+
+    .drag-live-sub {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .drag-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .drag-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .drag-box .title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .drag-box .time {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .drag-box .best {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .history-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .history-item:first-of-type {
+      border-top: none;
+    }
+
+    /* Service Tab */
+    .odo-card {
+      background: linear-gradient(135deg, #132036, #0f172a);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .odo-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .odo-val {
+      font-size: 32px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+    }
+
+    .odo-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .odo-input-row input {
+      flex: 1;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .service-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .service-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .service-name {
+      font-size: 15px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .service-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .status-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .status-tag.ok { background: var(--accent-dim); color: var(--accent); }
+    .status-tag.warn { background: rgba(245, 158, 11, 0.18); color: var(--amber); }
+    .status-tag.due { background: var(--danger-dim); color: var(--danger); }
+
+    .prog-track {
+      height: 8px;
+      background: #090d16;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 10px;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .service-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .service-remain {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .add-service-card {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .form-grid input {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      background: rgba(11, 17, 32, 0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 6px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+
+    .nav-btn .ico {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .nav-btn.active {
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 84px;
+      transform: translateX(-50%) translateY(16px);
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      z-index: 90;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="brand-dot" id="gpsDot"></div>
+      <h1>SPEEDO</h1>
+    </div>
+    <div class="gps-pill" id="gpsPill">GPS Mati</div>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: SPEEDO -->
+    <section id="tab-speedo" class="tab-view active">
+      <div class="gauge-card">
+        <svg class="gauge-svg" viewBox="0 0 300 205">
+          <defs>
+            <linearGradient id="arcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00e5a0" />
+              <stop offset="60%" stop-color="#f59e0b" />
+              <stop offset="100%" stop-color="#ef4444" />
+            </linearGradient>
+          </defs>
+          <!-- Background Track (220 deg arc from 160deg to 380deg) -->
+          <path id="arcBg" d="" fill="none" stroke="#1e293b" stroke-width="18" stroke-linecap="round" />
+          <!-- Active Progress Arc -->
+          <path id="arcFill" d="" fill="none" stroke="url(#arcGrad)" stroke-width="18" stroke-linecap="round" />
+          <!-- Tick Marks & Labels -->
+          <g id="gaugeTicks"></g>
+          <!-- Needle -->
+          <g id="gaugeNeedle" transform="rotate(-110 150 155)">
+            <line x1="150" y1="155" x2="150" y2="38" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.92" />
+            <circle cx="150" cy="155" r="7" fill="#00e5a0" stroke="#090d16" stroke-width="2" />
+          </g>
+        </svg>
+
+        <div class="speed-readout">
+          <div class="speed-num" id="speedNum">0</div>
+          <div class="speed-unit">KM / JAM</div>
+        </div>
+      </div>
+
+      <!-- Lean Angle -->
+      <div class="lean-card">
+        <div class="lean-head">
+          <span class="lean-title">Lean Angle (Sudut Miring)</span>
+          <button class="btn-mini" id="btnCalibrateLean">Kalibrasi 0°</button>
+        </div>
+        <div class="lean-display">
+          <div class="lean-side">Kiri <strong id="maxLeanL">0°</strong></div>
+          <div class="lean-current" id="leanNow">0°</div>
+          <div class="lean-side" style="text-align:right;">Kanan <strong id="maxLeanR">0°</strong></div>
+        </div>
+        <div class="lean-bar-track">
+          <div class="lean-center-line"></div>
+          <div class="lean-bar-fill" id="leanBarFill" style="left:50%; width:0%;"></div>
+        </div>
+      </div>
+
+      <!-- Core Stats -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Top Speed</div>
+          <div class="stat-val" style="color:var(--amber);" id="topSpeedVal">0</div>
+          <div class="stat-sub">km/jam</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Trip Meter</div>
+          <div class="stat-val" style="color:var(--cyan);" id="tripVal">0.00</div>
+          <div class="stat-sub">km</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Rata-Rata</div>
+          <div class="stat-val" id="avgSpeedVal">0</div>
+          <div class="stat-sub">km/jam</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-main" id="btnToggleGps">▶ Mulai GPS</button>
+        <button class="btn-sec" id="btnResetSession">↺ Reset Sesi</button>
+      </div>
+
+      <div class="alert-row">
+        <span>⚠️ Peringatan Batas Kecepatan</span>
+        <select id="speedLimitSelect">
+          <option value="0">Mati</option>
+          <option value="60">60 km/jam</option>
+          <option value="80">80 km/jam</option>
+          <option value="100" selected>100 km/jam</option>
+          <option value="120">120 km/jam</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- TAB 2: DRAG TIMER -->
+    <section id="tab-drag" class="tab-view">
+      <div class="drag-status-card">
+        <div class="drag-badge" id="dragBadge">Nyalakan GPS Dulu</div>
+        <div class="drag-timer" id="dragTimerVal">0.00</div>
+        <div class="drag-live-sub" id="dragSubText">Berhenti di 0 km/jam untuk Auto-Start</div>
+      </div>
+
+      <div class="drag-grid">
+        <div class="drag-box">
+          <div class="title">0 - 60 km/j</div>
+          <div class="time" id="run060">--</div>
+          <div class="best" id="best060">Best: --</div>
+        </div>
+        <div class="drag-box">
+          <div class="title">0 - 100 km/j</div>
+          <div class="time" id="run0100">--</div>
+          <div class="best" id="best0100">Best: --</div>
+        </div>
+        <div class="drag-box">
+          <div class="title">0 - 201 m</div>
+          <div class="time" id="run201">--</div>
+          <div class="best" id="best201">Best: --</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-main" id="btnArmDrag">🏁 Siapkan Ulang (Arm)</button>
+        <button class="btn-sec" id="btnClearDragHistory">🗑 Hapus Rekor</button>
+      </div>
+
+      <div class="history-card">
+        <div class="section-head">
+          <h3>Riwayat Tes Tarikan</h3>
+          <span style="font-size:11px; color:var(--muted);" id="allTimeTopLabel">Rekor Top: 0 km/j</span>
+        </div>
+        <div id="dragHistoryList">
+          <div style="font-size:12px; color:var(--muted); text-align:center; padding:12px 0;">
+            Belum ada catatan tes. Berhenti di 0 km/jam lalu tarik gas!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SERVIS -->
+    <section id="tab-servis" class="tab-view">
+      <div class="odo-card">
+        <div class="odo-top">
+          <span style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase;">Odometer Motor Saat Ini</span>
+          <label style="font-size:11px; color:var(--accent); display:flex; align-items:center; gap:5px;">
+            <input type="checkbox" id="autoSyncOdo" checked /> Auto-tambah GPS
+          </label>
+        </div>
+        <div class="odo-val"><span id="odoDisplay">15000</span> <span style="font-size:14px; color:var(--muted);">KM</span></div>
+        <div class="odo-input-row">
+          <input type="number" id="odoInput" placeholder="Masukkan KM di spidometer motor..." />
+          <button class="btn-mini" id="btnUpdateOdo" style="background:var(--accent); color:#04130d; padding:0 14px; font-size:12px;">Simpan</button>
+        </div>
+      </div>
+
+      <div id="serviceList"></div>
+
+      <div class="add-service-card">
+        <div style="font-size:13px; font-weight:800;">+ Tambah Pengingat Servis Baru</div>
+        <div class="form-grid">
+          <input type="text" id="newSvcName" class="full" placeholder="Nama (misal: Kampas Rem / Busi / Ban)" />
+          <input type="number" id="newSvcLast" placeholder="KM Terakhir Ganti" />
+          <input type="number" id="newSvcInt" placeholder="Interval (misal: 2000)" />
+        </div>
+        <button class="btn-main" id="btnAddService" style="width:100%; padding:11px;">Simpan Pengingat</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="speedo">
+      <span class="ico">🏍️</span>
+      <span>Speedo</span>
+    </button>
+    <button class="nav-btn" data-tab="drag">
+      <span class="ico">⏱️</span>
+      <span>Drag</span>
+    </button>
+    <button class="nav-btn" data-tab="servis">
+      <span class="ico">🔧</span>
+      <span>Servis</span>
+    </button>
+  </nav>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ---------- STORAGE KEYS ----------
+    const STORE_KEY = 'speedo_app_data_v1';
+
+    const defaultData = {
+      odometer: 15000,
+      autoSyncOdo: true,
+      speedLimit: 100,
+      allTimeTop: 0,
+      best060: null,
+      best0100: null,
+      best201: null,
+      dragHistory: [],
+      services: [
+        { id: 1, name: 'Oli Mesin', lastKm: 14000, intervalKm: 2000 },
+        { id: 2, name: 'Oli Gardan', lastKm: 13000, intervalKm: 4000 },
+        { id: 3, name: 'Servis CVT & V-Belt', lastKm: 12000, intervalKm: 8000 }
+      ]
+    };
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return structuredClone(defaultData);
+        return { ...structuredClone(defaultData), ...JSON.parse(raw) };
+      } catch {
+        return structuredClone(defaultData);
+      }
+    }
+
+    let appData = loadData();
+    function saveData() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(appData));
+    }
+
+    // ---------- UI HELPERS ----------
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    // Tab switching
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // ---------- SVG GAUGE SETUP ----------
+    const MAX_GAUGE_SPEED = 160;
+    const CX = 150, CY = 155, R = 118;
+    const START_ANGLE = -110; // degrees from top (12 o'clock)
+    const END_ANGLE = 110;    // total sweep = 220 deg
+
+    function polarToCartesian(cx, cy, r, angleDegFromTop) {
+      const rad = ((angleDegFromTop - 90) * Math.PI) / 180;
+      return {
+        x: cx + r * Math.cos(rad),
+        y: cy + r * Math.sin(rad)
+      };
+    }
+
+    function describeArc(cx, cy, r, startAngle, endAngle) {
+      const start = polarToCartesian(cx, cy, r, endAngle);
+      const end = polarToCartesian(cx, cy, r, startAngle);
+      const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+      return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
+    }
+
+    const arcBg = document.getElementById('arcBg');
+    const arcFill = document.getElementById('arcFill');
+    const gaugeNeedle = document.getElementById('gaugeNeedle');
+    const gaugeTicks = document.getElementById('gaugeTicks');
+
+    arcBg.setAttribute('d', describeArc(CX, CY, R, START_ANGLE, END_ANGLE));
+
+    // Build ticks 0..160 step 20
+    for (let spd = 0; spd <= MAX_GAUGE_SPEED; spd += 20) {
+      const ratio = spd / MAX_GAUGE_SPEED;
+      const deg = START_ANGLE + ratio * (END_ANGLE - START_ANGLE);
+      const p1 = polarToCartesian(CX, CY, R - 14, deg);
+      const p2 = polarToCartesian(CX, CY, R - 22, deg);
+      const pt = polarToCartesian(CX, CY, R - 35, deg);
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', p1.x);
+      line.setAttribute('y1', p1.y);
+      line.setAttribute('x2', p2.x);
+      line.setAttribute('y2', p2.y);
+      line.setAttribute('stroke', spd >= 120 ? '#ef4444' : '#64748b');
+      line.setAttribute('stroke-width', '2');
+      gaugeTicks.appendChild(line);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', pt.x);
+      txt.setAttribute('y', pt.y + 4);
+      txt.setAttribute('fill', spd >= 120 ? '#f87171' : '#94a3b8');
+      txt.setAttribute('font-size', '10');
+      txt.setAttribute('font-weight', '700');
+      txt.setAttribute('text-anchor', 'middle');
+      txt.textContent = spd;
+      gaugeTicks.appendChild(txt);
+    }
+
+    function updateGauge(speedKmh) {
+      const clamped = Math.max(0, Math.min(MAX_GAUGE_SPEED, speedKmh));
+      const ratio = clamped / MAX_GAUGE_SPEED;
+      const angle = START_ANGLE + ratio * (END_ANGLE - START_ANGLE);
+
+      document.getElementById('speedNum').textContent = Math.round(speedKmh);
+      gaugeNeedle.setAttribute('transform', `rotate(${angle} ${CX} ${CY})`);
+
+      if (clamped <= 0.5) {
+        arcFill.setAttribute('d', '');
+      } else {
+        arcFill.setAttribute('d', describeArc(CX, CY, R, START_ANGLE, angle));
+      }
+
+      // Speed limit flash
+      if (appData.speedLimit > 0 && speedKmh >= appData.speedLimit) {
+        document.body.classList.add('speed-alert-flash');
+      } else {
+        document.body.classList.remove('speed-alert-flash');
+      }
+    }
+
+    updateGauge(0);
+
+    // ---------- LEAN ANGLE (DEVICE ORIENTATION) ----------
+    let leanOffset = 0;
+    let rawGamma = 0;
+    let maxLeanL = 0;
+    let maxLeanR = 0;
+
+    function handleOrientation(ev) {
+      if (typeof ev.gamma !== 'number') return;
+      rawGamma = ev.gamma; // -90 to 90 in portrait
+      let angle = Math.round(rawGamma - leanOffset);
+      if (angle > 65) angle = 65;
+      if (angle < -65) angle = -65;
+
+      const absAngle = Math.abs(angle);
+      if (angle < 0 && absAngle > maxLeanL) maxLeanL = absAngle;
+      if (angle > 0 && absAngle > maxLeanR) maxLeanR = absAngle;
+
+      const dir = angle < -1 ? 'L ' : angle > 1 ? 'R ' : '';
+      document.getElementById('leanNow').textContent = `${dir}${absAngle}°`;
+      document.getElementById('maxLeanL').textContent = `${maxLeanL}°`;
+      document.getElementById('maxLeanR').textContent = `${maxLeanR}°`;
+
+      const bar = document.getElementById('leanBarFill');
+      const pct = Math.min(50, (absAngle / 55) * 50);
+      if (angle < 0) {
+        bar.style.left = `${50 - pct}%`;
+        bar.style.width = `${pct}%`;
+        bar.style.background = absAngle > 35 ? '#ef4444' : '#38bdf8';
+      } else {
+        bar.style.left = '50%';
+        bar.style.width = `${pct}%`;
+        bar.style.background = absAngle > 35 ? '#ef4444' : '#00e5a0';
+      }
+    }
+
+    window.addEventListener('deviceorientation', handleOrientation);
+
+    document.getElementById('btnCalibrateLean').addEventListener('click', () => {
+      leanOffset = rawGamma;
+      maxLeanL = 0;
+      maxLeanR = 0;
+      document.getElementById('maxLeanL').textContent = '0°';
+      document.getElementById('maxLeanR').textContent = '0°';
+      document.getElementById('leanNow').textContent = '0°';
+      showToast('Sudut miring dikalibrasi ke 0°');
+    });
+
+    // ---------- GPS ENGINE + SMOOTHING + DRAG TIMER ----------
+    let gpsRunning = false;
+    let watchId = null;
+    let isCapGeo = false;
+
+    let lastPos = null;
+    let currentSpeed = 0;
+    let prevSpeed = 0;
+    let prevTime = 0;
+    let sessionTopSpeed = 0;
+    let sessionTripKm = 0;
+    let movingSpeedSum = 0;
+    let movingSamples = 0;
+    let odoAccKm = 0;
+
+    // Drag state
+    const drag = {
+      status: 'IDLE', // IDLE | READY | RUNNING | DONE
+      startTime: 0,
+      startDistM: 0,
+      distM: 0,
+      t60: null,
+      t100: null,
+      t201: null,
+      rafId: null
+    };
+
+    function haversineMeters(lat1, lon1, lat2, lon2) {
+      const R_EARTH = 6371000;
+      const toRad = d => (d * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      return 2 * R_EARTH * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function updateDragUI() {
+      const badge = document.getElementById('dragBadge');
+      const sub = document.getElementById('dragSubText');
+      badge.className = 'drag-badge';
+
+      if (!gpsRunning) {
+        badge.textContent = 'Nyalakan GPS Dulu';
+        sub.textContent = 'Tap Mulai GPS di tab Speedo';
+      } else if (drag.status === 'IDLE') {
+        badge.textContent = 'Menunggu Berhenti (0 km/j)';
+        sub.textContent = `Kecepatan sekarang: ${Math.round(currentSpeed)} km/jam`;
+      } else if (drag.status === 'READY') {
+        badge.classList.add('ready');
+        badge.textContent = 'READY • TARIK GAS!';
+        sub.textContent = 'Timer otomatis jalan begitu motor bergerak';
+      } else if (drag.status === 'RUNNING') {
+        badge.classList.add('running');
+        badge.textContent = 'RUNNING...';
+        sub.textContent = `${Math.round(currentSpeed)} km/j • Jarak ${Math.round(drag.distM)} m`;
+      } else if (drag.status === 'DONE') {
+        badge.classList.add('done');
+        badge.textContent = 'SELESAI';
+        sub.textContent = 'Berhenti 0 km/j atau tap Siapkan Ulang untuk tes lagi';
+      }
+
+      document.getElementById('run060').textContent = drag.t60 ? `${drag.t60.toFixed(2)}s` : '--';
+      document.getElementById('run0100').textContent = drag.t100 ? `${drag.t100.toFixed(2)}s` : '--';
+      document.getElementById('run201').textContent = drag.t201 ? `${drag.t201.toFixed(2)}s` : '--';
+
+      document.getElementById('best060').textContent = appData.best060 ? `Best: ${appData.best060.toFixed(2)}s` : 'Best: --';
+      document.getElementById('best0100').textContent = appData.best0100 ? `Best: ${appData.best0100.toFixed(2)}s` : 'Best: --';
+      document.getElementById('best201').textContent = appData.best201 ? `Best: ${appData.best201.toFixed(2)}s` : 'Best: --';
+      document.getElementById('allTimeTopLabel').textContent = `Rekor Top: ${Math.round(appData.allTimeTop)} km/j`;
+    }
+
+    function tickDragClock() {
+      if (drag.status === 'RUNNING') {
+        const elapsed = (performance.now() - drag.startTime) / 1000;
+        document.getElementById('dragTimerVal').textContent = elapsed.toFixed(2);
+        drag.rafId = requestAnimationFrame(tickDragClock);
+      }
+    }
+
+    function saveDragRun() {
+      if (!drag.t60 && !drag.t100 && !drag.t201) return;
+      let changed = false;
+      if (drag.t60 && (!appData.best060 || drag.t60 < appData.best060)) { appData.best060 = drag.t60; changed = true; }
+      if (drag.t100 && (!appData.best0100 || drag.t100 < appData.best0100)) { appData.best0100 = drag.t100; changed = true; }
+      if (drag.t201 && (!appData.best201 || drag.t201 < appData.best201)) { appData.best201 = drag.t201; changed = true; }
+
+      const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      appData.dragHistory.unshift({
+        time: nowStr,
+        t60: drag.t60,
+        t100: drag.t100,
+        t201: drag.t201
+      });
+      if (appData.dragHistory.length > 12) appData.dragHistory.pop();
+      saveData();
+      renderDragHistory();
+      if (changed) showToast('🏆 Rekor baru tersimpan!');
+    }
+
+    function renderDragHistory() {
+      const box = document.getElementById('dragHistoryList');
+      if (!appData.dragHistory.length) {
+        box.innerHTML = `<div style="font-size:12px; color:var(--muted); text-align:center; padding:12px 0;">Belum ada catatan tes. Berhenti di 0 km/jam lalu tarik gas!</div>`;
+        return;
+      }
+      box.innerHTML = appData.dragHistory.map(h => `
+        <div class="history-item">
+          <span style="color:var(--muted);">${h.time}</span>
+          <span>0-60: <strong>${h.t60 ? h.t60.toFixed(2) + 's' : '-'}</strong></span>
+          <span>0-100: <strong>${h.t100 ? h.t100.toFixed(2) + 's' : '-'}</strong></span>
+          <span>201m: <strong>${h.t201 ? h.t201.toFixed(2) + 's' : '-'}</strong></span>
+        </div>
+      `).join('');
+    }
+
+    function processDragLogic(speed, nowMs, deltaDistM) {
+      if (drag.status === 'IDLE') {
+        if (speed <= 1.8) {
+          drag.status = 'READY';
+          drag.t60 = null;
+          drag.t100 = null;
+          drag.t201 = null;
+          drag.distM = 0;
+          document.getElementById('dragTimerVal').textContent = '0.00';
+        }
+      } else if (drag.status === 'READY') {
+        if (speed >= 2.8) {
+          drag.status = 'RUNNING';
+          drag.startTime = nowMs;
+          drag.distM = deltaDistM;
+          tickDragClock();
+        }
+      } else if (drag.status === 'RUNNING') {
+        drag.distM += deltaDistM;
+        const elapsed = (nowMs - drag.startTime) / 1000;
+        const dt = (nowMs - prevTime) / 1000;
+
+        // Interpolated 0-60
+        if (!drag.t60 && speed >= 60) {
+          const frac = (speed > prevSpeed && dt > 0) ? (60 - prevSpeed) / (speed - prevSpeed) : 1;
+          drag.t60 = Math.max(0.1, elapsed - dt * (1 - Math.max(0, Math.min(1, frac))));
+        }
+        // Interpolated 0-100
+        if (!drag.t100 && speed >= 100) {
+          const frac = (speed > prevSpeed && dt > 0) ? (100 - prevSpeed) / (speed - prevSpeed) : 1;
+          drag.t100 = Math.max(0.1, elapsed - dt * (1 - Math.max(0, Math.min(1, frac))));
+        }
+        // 201m
+        if (!drag.t201 && drag.distM >= 201) {
+          drag.t201 = elapsed;
+        }
+
+        // Auto-finish if all targets hit or bike slowed down to stop after moving
+        if ((drag.t60 && drag.t100 && drag.t201) || (elapsed > 4 && speed < 2)) {
+          drag.status = 'DONE';
+          cancelAnimationFrame(drag.rafId);
+          saveDragRun();
+        }
+      } else if (drag.status === 'DONE') {
+        if (speed <= 1.2) {
+          // Stay done until user clicks Arm or stays stopped
+        }
+      }
+      updateDragUI();
+    }
+
+    function onPositionUpdate(pos) {
+      if (!pos || !pos.coords) return;
+      const { latitude, longitude, speed, accuracy } = pos.coords;
+      const nowMs = performance.now();
+
+      // Update GPS pill
+      const pill = document.getElementById('gpsPill');
+      const dot = document.getElementById('gpsDot');
+      const acc = Math.round(accuracy || 99);
+      if (acc <= 15) {
+        pill.className = 'gps-pill good';
+        pill.textContent = `GPS Kuat (±${acc}m)`;
+        dot.className = 'brand-dot active';
+      } else {
+        pill.className = 'gps-pill warn';
+        pill.textContent = `GPS Lemah (±${acc}m)`;
+        dot.className = 'brand-dot searching';
+      }
+
+      // Compute distance & fallback speed
+      let deltaDistM = 0;
+      let computedKmh = 0;
+      if (lastPos && acc <= 35) {
+        const d = haversineMeters(lastPos.lat, lastPos.lon, latitude, longitude);
+        const dtSec = (nowMs - lastPos.time) / 1000;
+        if (d > 1.2 && dtSec > 0.2) {
+          deltaDistM = d;
+          computedKmh = (d / dtSec) * 3.6;
+        }
+      }
+
+      let rawKmh = (typeof speed === 'number' && speed >= 0) ? speed * 3.6 : computedKmh;
+      // Filter GPS jitter when stationary
+      if (rawKmh < 1.5 || acc > 40) rawKmh = 0;
+
+      // Light smoothing for responsive gauge
+      prevSpeed = currentSpeed;
+      currentSpeed = currentSpeed * 0.25 + rawKmh * 0.75;
+      if (rawKmh === 0 && currentSpeed < 1.5) currentSpeed = 0;
+
+      // Update trip & odometer
+      if (deltaDistM > 0 && currentSpeed > 2) {
+        const deltaKm = deltaDistM / 1000;
+        sessionTripKm += deltaKm;
+        if (appData.autoSyncOdo) {
+          odoAccKm += deltaKm;
+          if (odoAccKm >= 0.5) {
+            appData.odometer = Math.round((appData.odometer + odoAccKm) * 10) / 10;
+            odoAccKm = 0;
+            saveData();
+            renderServices();
+          }
+        }
+      }
+
+      // Top & Avg speed
+      if (currentSpeed > sessionTopSpeed) sessionTopSpeed = currentSpeed;
+      if (currentSpeed > appData.allTimeTop) {
+        appData.allTimeTop = currentSpeed;
+        saveData();
+      }
+      if (currentSpeed > 3) {
+        movingSpeedSum += currentSpeed;
+        movingSamples++;
+      }
+
+      updateGauge(currentSpeed);
+      document.getElementById('topSpeedVal').textContent = Math.round(sessionTopSpeed);
+      document.getElementById('tripVal').textContent = sessionTripKm.toFixed(2);
+      document.getElementById('avgSpeedVal').textContent = movingSamples ? Math.round(movingSpeedSum / movingSamples) : 0;
+
+      processDragLogic(currentSpeed, nowMs, deltaDistM);
+
+      lastPos = { lat: latitude, lon: longitude, time: nowMs };
+      prevTime = nowMs;
+    }
+
+    async function startGps() {
+      const btn = document.getElementById('btnToggleGps');
+      const pill = document.getElementById('gpsPill');
+      const dot = document.getElementById('gpsDot');
+
+      pill.className = 'gps-pill warn';
+      pill.textContent = 'Mencari GPS...';
+      dot.className = 'brand-dot searching';
+
+      try {
+        // Keep wake lock for web fallback
+        if ('wakeLock' in navigator) {
+          navigator.wakeLock.request('screen').catch(() => {});
+        }
+
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation) {
+          const Geo = window.Capacitor.Plugins.Geolocation;
+          await Geo.requestPermissions();
+          isCapGeo = true;
+          watchId = await Geo.watchPosition(
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+            (pos, err) => {
+              if (err) return;
+              onPositionUpdate(pos);
+            }
+          );
+        } else if (navigator.geolocation) {
+          isCapGeo = false;
+          watchId = navigator.geolocation.watchPosition(
+            onPositionUpdate,
+            () => showToast('Izinkan akses lokasi/GPS di HP'),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
+        } else {
+          showToast('GPS tidak didukung perangkat ini');
+          return;
+        }
+
+        gpsRunning = true;
+        drag.status = 'IDLE';
+        btn.textContent = '⏹ Stop GPS';
+        btn.classList.add('stop');
+        updateDragUI();
+        showToast('GPS aktif — siap riding!');
+      } catch (err) {
+        showToast('Gagal mengaktifkan GPS. Pastikan Lokasi HP aktif.');
+        pill.className = 'gps-pill';
+        pill.textContent = 'GPS Mati';
+        dot.className = 'brand-dot';
+      }
+    }
+
+    async function stopGps() {
+      if (watchId !== null) {
+        if (isCapGeo && window.Capacitor?.Plugins?.Geolocation) {
+          await window.Capacitor.Plugins.Geolocation.clearWatch({ id: watchId });
+        } else if (navigator.geolocation) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        watchId = null;
+      }
+      gpsRunning = false;
+      currentSpeed = 0;
+      lastPos = null;
+      updateGauge(0);
+      document.getElementById('gpsPill').className = 'gps-pill';
+      document.getElementById('gpsPill').textContent = 'GPS Mati';
+      document.getElementById('gpsDot').className = 'brand-dot';
+      const btn = document.getElementById('btnToggleGps');
+      btn.textContent = '▶ Mulai GPS';
+      btn.classList.remove('stop');
+      updateDragUI();
+    }
+
+    document.getElementById('btnToggleGps').addEventListener('click', () => {
+      if (gpsRunning) stopGps();
+      else startGps();
+    });
+
+    document.getElementById('btnResetSession').addEventListener('click', () => {
+      sessionTopSpeed = 0;
+      sessionTripKm = 0;
+      movingSpeedSum = 0;
+      movingSamples = 0;
+      maxLeanL = 0;
+      maxLeanR = 0;
+      document.getElementById('topSpeedVal').textContent = '0';
+      document.getElementById('tripVal').textContent = '0.00';
+      document.getElementById('avgSpeedVal').textContent = '0';
+      document.getElementById('maxLeanL').textContent = '0°';
+      document.getElementById('maxLeanR').textContent = '0°';
+      showToast('Data sesi di-reset');
+    });
+
+    const speedLimitSelect = document.getElementById('speedLimitSelect');
+    speedLimitSelect.value = String(appData.speedLimit);
+    speedLimitSelect.addEventListener('change', () => {
+      appData.speedLimit = Number(speedLimitSelect.value);
+      saveData();
+      showToast(appData.speedLimit ? `Peringatan aktif di ${appData.speedLimit} km/jam` : 'Peringatan kecepatan dimatikan');
+    });
+
+    document.getElementById('btnArmDrag').addEventListener('click', () => {
+      cancelAnimationFrame(drag.rafId);
+      drag.status = currentSpeed <= 1.8 && gpsRunning ? 'READY' : 'IDLE';
+      drag.t60 = null;
+      drag.t100 = null;
+      drag.t201 = null;
+      drag.distM = 0;
+      document.getElementById('dragTimerVal').textContent = '0.00';
+      updateDragUI();
+      showToast('Timer siap — berhenti di 0 km/jam lalu gas!');
+    });
+
+    document.getElementById('btnClearDragHistory').addEventListener('click', () => {
+      appData.best060 = null;
+      appData.best0100 = null;
+      appData.best201 = null;
+      appData.dragHistory = [];
+      saveData();
+      updateDragUI();
+      renderDragHistory();
+      showToast('Riwayat & rekor drag dihapus');
+    });
+
+    // ---------- SERVICE REMINDER ----------
+    const autoSyncOdo = document.getElementById('autoSyncOdo');
+    autoSyncOdo.checked = !!appData.autoSyncOdo;
+    autoSyncOdo.addEventListener('change', () => {
+      appData.autoSyncOdo = autoSyncOdo.checked;
+      saveData();
+    });
+
+    document.getElementById('btnUpdateOdo').addEventListener('click', () => {
+      const val = Number(document.getElementById('odoInput').value);
+      if (!val || val < 0) {
+        showToast('Masukkan angka KM yang valid');
+        return;
+      }
+      appData.odometer = val;
+      document.getElementById('odoInput').value = '';
+      saveData();
+      renderServices();
+      showToast(`Odometer di-update ke ${val.toLocaleString('id-ID')} km`);
+    });
+
+    document.getElementById('btnAddService').addEventListener('click', () => {
+      const name = document.getElementById('newSvcName').value.trim();
+      const lastKm = Number(document.getElementById('newSvcLast').value) || Math.round(appData.odometer);
+      const intervalKm = Number(document.getElementById('newSvcInt').value);
+
+      if (!name || !intervalKm || intervalKm <= 0) {
+        showToast('Isi nama servis dan interval KM-nya');
+        return;
+      }
+
+      appData.services.push({
+        id: Date.now(),
+        name,
+        lastKm,
+        intervalKm
+      });
+      document.getElementById('newSvcName').value = '';
+      document.getElementById('newSvcLast').value = '';
+      document.getElementById('newSvcInt').value = '';
+      saveData();
+      renderServices();
+      showToast(`${name} ditambahkan`);
+    });
+
+    function renderServices() {
+      const odo = Math.round(appData.odometer);
+      document.getElementById('odoDisplay').textContent = odo.toLocaleString('id-ID');
+
+      const list = document.getElementById('serviceList');
+      list.innerHTML = '';
+
+      appData.services.forEach(svc => {
+        const used = Math.max(0, odo - svc.lastKm);
+        const remain = svc.intervalKm - used;
+        const pct = Math.min(100, Math.round((used / svc.intervalKm) * 100));
+
+        let statusClass = 'ok', statusText = 'Aman', barColor = '#00e5a0';
+        if (remain <= 0) {
+          statusClass = 'due';
+          statusText = 'Wajib Ganti!';
+          barColor = '#ef4444';
+        } else if (pct >= 80) {
+          statusClass = 'warn';
+          statusText = 'Sebentar Lagi';
+          barColor = '#f59e0b';
+        }
+
+        const remainText = remain > 0
+          ? `Sisa ${remain.toLocaleString('id-ID')} km`
+          : `Lewat ${Math.abs(remain).toLocaleString('id-ID')} km`;
+
+        const el = document.createElement('div');
+        el.className = 'service-item';
+        el.innerHTML = `
+          <div class="service-top">
+            <div>
+              <h4 class="service-name">${svc.name}</h4>
+              <div class="service-meta">Terakhir: ${svc.lastKm.toLocaleString('id-ID')} km • Tiap ${svc.intervalKm.toLocaleString('id-ID')} km</div>
+            </div>
+            <span class="status-tag ${statusClass}">${statusText}</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-fill" style="width:${pct}%; background:${barColor};"></div>
+          </div>
+          <div class="service-actions">
+            <span class="service-remain" style="color:${barColor};">${remainText}</span>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-mini" data-svc-reset="${svc.id}" style="color:var(--accent);">✓ Sudah Ganti</button>
+              <button class="btn-mini" data-svc-del="${svc.id}" style="color:var(--danger);">✕</button>
+            </div>
+          </div>
+        `;
+        list.appendChild(el);
+      });
+    }
+
+    document.getElementById('serviceList').addEventListener('click', (e) => {
+      const resetId = e.target.getAttribute('data-svc-reset');
+      const delId = e.target.getAttribute('data-svc-del');
+      if (resetId) {
+        const svc = appData.services.find(s => s.id === Number(resetId));
+        if (svc) {
+          svc.lastKm = Math.round(appData.odometer);
+          saveData();
+          renderServices();
+          showToast(`${svc.name} di-reset ke ${svc.lastKm.toLocaleString('id-ID')} km`);
+        }
+      } else if (delId) {
+        appData.services = appData.services.filter(s => s.id !== Number(delId));
+        saveData();
+        renderServices();
+        showToast('Pengingat dihapus');
+      }
+    });
+
+    // Initial renders
+    renderDragHistory();
+    updateDragUI();
+    renderServices();
+  </script>
+</body>
+</html>

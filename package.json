@@ -1,0 +1,14 @@
+{
+  "name": "speedo-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Speedo - GPS Speedometer, Drag Timer, Lean Angle & Pengingat Servis",
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/geolocation": "^6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
