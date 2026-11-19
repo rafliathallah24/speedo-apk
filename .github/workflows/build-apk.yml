@@ -31,15 +31,38 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Configure Permissions & Keep Screen On
+      - name: Configure Background GPS, Permissions & Keep Screen On
         run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if ! grep -q "ACCESS_FINE_LOCATION" "$MANIFEST"; then
-            sed -i 's|<application|<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-feature android:name="android.hardware.location.gps" android:required="false" />\n    <application|' "$MANIFEST"
-          fi
-          MAIN_ACT=$(find android/app/src/main/java -name "MainActivity.java" | head -n 1)
-          cat << 'EOF' > "$MAIN_ACT"
-          package com.rafli.speedo;
+          python3 - << 'PYEOF'
+          import os, glob
+
+          manifest_path = "android/app/src/main/AndroidManifest.xml"
+          with open(manifest_path, "r", encoding="utf-8") as f:
+              manifest = f.read()
+
+          perms = [
+              '<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />',
+              '<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />',
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />',
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />',
+              '<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />',
+              '<uses-feature android:name="android.hardware.location.gps" android:required="false" />',
+          ]
+          missing = [p for p in perms if p not in manifest]
+          if missing:
+              manifest = manifest.replace("<application", "\n    ".join(missing) + "\n    <application", 1)
+
+          service_tag = '        <service android:name=".SpeedoGpsService" android:exported="false" android:foregroundServiceType="location" />'
+          if "SpeedoGpsService" not in manifest:
+              manifest = manifest.replace("</application>", service_tag + "\n    </application>", 1)
+
+          with open(manifest_path, "w", encoding="utf-8") as f:
+              f.write(manifest)
+
+          main_acts = glob.glob("android/app/src/main/java/**/MainActivity.java", recursive=True)
+          java_dir = os.path.dirname(main_acts[0])
+
+          main_activity_code = '''package com.rafli.speedo;
 
           import android.os.Bundle;
           import android.view.WindowManager;
@@ -48,11 +71,193 @@ jobs:
           public class MainActivity extends BridgeActivity {
               @Override
               public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(BgGpsPlugin.class);
                   super.onCreate(savedInstanceState);
                   getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
               }
           }
-          EOF
+          '''
+
+          bg_plugin_code = '''package com.rafli.speedo;
+
+          import android.Manifest;
+          import android.content.Intent;
+          import android.content.pm.PackageManager;
+          import android.os.Build;
+          import androidx.core.content.ContextCompat;
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+
+          @CapacitorPlugin(name = "BgGps")
+          public class BgGpsPlugin extends Plugin {
+              private static BgGpsPlugin instance;
+
+              @Override
+              public void load() {
+                  instance = this;
+              }
+
+              public static void emitLocation(double lat, double lon, float speed, float accuracy, long time) {
+                  if (instance != null) {
+                      JSObject ret = new JSObject();
+                      ret.put("latitude", lat);
+                      ret.put("longitude", lon);
+                      ret.put("speed", speed);
+                      ret.put("accuracy", accuracy);
+                      ret.put("timestamp", time);
+                      instance.notifyListeners("location", ret);
+                  }
+              }
+
+              @PluginMethod
+              public void start(PluginCall call) {
+                  boolean hasFine = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                  if (!hasFine) {
+                      call.reject("Izin lokasi belum diberikan");
+                      return;
+                  }
+                  Intent intent = new Intent(getContext(), SpeedoGpsService.class);
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      getContext().startForegroundService(intent);
+                  } else {
+                      getContext().startService(intent);
+                  }
+                  call.resolve();
+              }
+
+              @PluginMethod
+              public void stop(PluginCall call) {
+                  Intent intent = new Intent(getContext(), SpeedoGpsService.class);
+                  getContext().stopService(intent);
+                  call.resolve();
+              }
+          }
+          '''
+
+          service_code = '''package com.rafli.speedo;
+
+          import android.Manifest;
+          import android.app.Notification;
+          import android.app.NotificationChannel;
+          import android.app.NotificationManager;
+          import android.app.PendingIntent;
+          import android.app.Service;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.content.pm.PackageManager;
+          import android.content.pm.ServiceInfo;
+          import android.location.Location;
+          import android.location.LocationListener;
+          import android.location.LocationManager;
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.os.IBinder;
+          import androidx.core.app.NotificationCompat;
+          import androidx.core.content.ContextCompat;
+
+          public class SpeedoGpsService extends Service implements LocationListener {
+              private static final String CHANNEL_ID = "speedo_gps_channel";
+              private static final int NOTIF_ID = 101;
+              private LocationManager locationManager;
+
+              @Override
+              public void onCreate() {
+                  super.onCreate();
+                  createNotificationChannel();
+                  Notification notif = buildNotification("Merekam jarak & odometer di latar belakang");
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                      startForeground(NOTIF_ID, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+                  } else {
+                      startForeground(NOTIF_ID, notif);
+                  }
+
+                  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                  if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                      if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                          locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 1.0f, this);
+                      }
+                  }
+              }
+
+              @Override
+              public int onStartCommand(Intent intent, int flags, int startId) {
+                  return START_STICKY;
+              }
+
+              @Override
+              public void onLocationChanged(Location location) {
+                  if (location != null) {
+                      float spd = location.hasSpeed() ? location.getSpeed() : -1f;
+                      BgGpsPlugin.emitLocation(
+                          location.getLatitude(),
+                          location.getLongitude(),
+                          spd,
+                          location.getAccuracy(),
+                          location.getTime()
+                      );
+                  }
+              }
+
+              @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
+              @Override public void onProviderEnabled(String provider) {}
+              @Override public void onProviderDisabled(String provider) {}
+
+              @Override
+              public void onDestroy() {
+                  if (locationManager != null) {
+                      locationManager.removeUpdates(this);
+                  }
+                  super.onDestroy();
+              }
+
+              @Override
+              public IBinder onBind(Intent intent) {
+                  return null;
+              }
+
+              private void createNotificationChannel() {
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      NotificationChannel channel = new NotificationChannel(
+                          CHANNEL_ID,
+                          "Speedo Background GPS",
+                          NotificationManager.IMPORTANCE_LOW
+                      );
+                      NotificationManager manager = getSystemService(NotificationManager.class);
+                      if (manager != null) {
+                          manager.createNotificationChannel(channel);
+                      }
+                  }
+              }
+
+              private Notification buildNotification(String text) {
+                  Intent launchIntent = new Intent(this, MainActivity.class);
+                  int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                      flags |= PendingIntent.FLAG_IMMUTABLE;
+                  }
+                  PendingIntent pi = PendingIntent.getActivity(this, 0, launchIntent, flags);
+
+                  return new NotificationCompat.Builder(this, CHANNEL_ID)
+                      .setContentTitle("Speedo Aktif")
+                      .setContentText(text)
+                      .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+                      .setOngoing(true)
+                      .setContentIntent(pi)
+                      .build();
+              }
+          }
+          '''
+
+          with open(os.path.join(java_dir, "MainActivity.java"), "w", encoding="utf-8") as f:
+              f.write(main_activity_code.strip() + "\n")
+          with open(os.path.join(java_dir, "BgGpsPlugin.java"), "w", encoding="utf-8") as f:
+              f.write(bg_plugin_code.strip() + "\n")
+          with open(os.path.join(java_dir, "SpeedoGpsService.java"), "w", encoding="utf-8") as f:
+              f.write(service_code.strip() + "\n")
+          PYEOF
 
       - name: Build Debug APK
         run: |
